@@ -45,8 +45,15 @@ const SaveElements = async (url, data) => {
         const dataSpinner = createSpinner('Adding and saving data...').start()
         sleep(2000).then(() => {
           data.forEach(element => {
-            const dataSet = new Model(element)
-            dataSet.save()
+            if (element.length && element.length > 0) {
+              element.forEach(elementAnidated => {
+                const dataSet = new Model(elementAnidated)
+                dataSet.save()
+              })
+            } else {
+              const dataSet = new Model(element)
+              dataSet.save()
+            }
           })
           dataSpinner.success({ text: 'Data saved' })
           resolve(true)

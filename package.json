@@ -1,6 +1,6 @@
 {
   "name": "json-mongoser",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Console application to read JSON files and upload them to MongoDB",
   "main": "index.js",
   "type": "module",
@@ -33,6 +33,7 @@
     "chalk": "5.0.1",
     "chalk-animation": "2.0.2",
     "figlet": "1.5.2",
+    "inquirer": "8.2.4",
     "mongoose": "6.3.1",
     "morgan": "1.10.0",
     "nanospinner": "1.1.0"

@@ -19,10 +19,4 @@ const CreateModel = async (schemaPath) => {
   })
 }
 
-const CleanModel = () => {
-  const fileModelPath = path.join(__dirname, '../' + 'model/modelSaved.js')
-  const text = fs.readFileSync(fileModelPath, 'utf8')
-  fs.writeFileSync(path.join(__dirname, '../') + 'model/model.js', text)
-}
-
-export { CreateModel, CleanModel }
+export { CreateModel }

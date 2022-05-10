@@ -3,20 +3,25 @@ import chalk from 'chalk'
 import gradient from 'gradient-string'
 import chalkAnimation from 'chalk-animation'
 import figlet from 'figlet'
+import path from 'path'
+import { fileURLToPath } from 'url'
+import inquirer from 'inquirer'
 import {
   dirValidate,
   mongoConectionValidate,
   CreateModel,
   ReadElements,
-  SaveElements,
-  CleanModel
+  SaveElements
 } from './services/index.js'
 import Model from './model/model.js'
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 const rainbow = chalkAnimation.rainbow('Created by: alejogonza <3 \n')
 
 figlet('JSON-MONGOSER', (_err, data) => {
   console.log(gradient.pastel.multiline(data) + '\n')
-  console.log(chalk.bgGreen('Version:') + ' 1.0.0\n')
+  console.log(chalk.bgGreen('Version:') + ' 2.0.0\n')
   rainbow.start()
 })
 
@@ -41,7 +46,7 @@ const start = async () => {
       process.exit(0)
     }
     if (process.argv.includes('-v')) {
-      console.log(chalk.bgGreen('Version:') + ' 1.0.0\n')
+      console.log(chalk.bgGreen('Version:') + ' 2.0.0\n')
       process.exit(0)
     }
     if (process.argv.includes('-m')) {
@@ -67,14 +72,51 @@ const start = async () => {
           process.exit(0)
         } else {
           if (Model() !== 'model') {
-            const data = await ReadElements(getFilesArg)
-            const saved = await SaveElements(getConnectArg, data)
-            if (saved) {
-              chalkAnimation.karaoke('All json files saved successfully :)')
-              CleanModel()
-              await sleep(3000).then(() => {
-                process.exit(0)
+            const modelPath = path.join(__dirname, '../') + 'model/model.js'
+            const answers = await inquirer.prompt({
+              name: 'model',
+              type: 'list',
+              message: `it looks like you already have a model loaded\n you can see it here: ${modelPath}\n ¿do you want to use it?\n`,
+              choices: [
+                'yes',
+                'no'
+              ]
+            })
+            if (answers.model === 'yes') {
+              console.clear()
+              const data = await ReadElements(getFilesArg)
+              const saved = await SaveElements(getConnectArg, data)
+              if (saved) {
+                chalkAnimation.karaoke('All json files saved successfully :)')
+                await sleep(3000).then(() => {
+                  process.exit(0)
+                })
+              }
+            } else {
+              const pathRequest = await inquirer.prompt({
+                name: 'path',
+                type: 'input',
+                message: 'enter the model path:'
               })
+              if (dirValidate(pathRequest.path)) {
+                console.clear()
+                await CreateModel(pathRequest.path)
+                const messageModel = chalkAnimation.karaoke('model saved successfully :)')
+                await sleep(3000).then(() => {
+                  messageModel.stop()
+                  console.clear()
+                })
+                const data = await ReadElements(getFilesArg)
+                const saved = await SaveElements(getConnectArg, data)
+                if (saved) {
+                  chalkAnimation.karaoke('All json files saved successfully :)')
+                  await sleep(3000).then(() => {
+                    process.exit(0)
+                  })
+                }
+              } else {
+                console.log(chalk.red('ERROR:'), 'model no exist. Use -h for help.\n')
+              }
             }
           } else {
             console.log(chalk.red('ERROR:'), 'model no exist. Use -h for help.\n')
